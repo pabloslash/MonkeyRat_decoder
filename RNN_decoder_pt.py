@@ -40,12 +40,14 @@ decoding_sig = 'EMGdat'     # Usually: 'EMGdat' / 'KINdat' (!!string)
 decoding_labels = 'EMGlabels'  # Usually: 'EMGlabels' / 'KINlabels' (!!string)
 signal = 1                  # EMG/Kinematic column to decode (FCR,FCU,ECR etc.)
 
-num_neurons = X.shape[1]
-num_ex = X.shape[0] - bins_before  # Predictions start after "bins_before" bins
 
 neural_dat = data[neural_sig]
 dec_sig_dat = data[decoding_sig][:,signal]
 sigs_labels = data[decoding_labels]
+
+num_neurons = neural_dat.shape[1]
+num_ex = neural_dat.shape[0] - bins_before  # Predictions start after "bins_before" bins
+
 
 EMGname = get_EMG_name(decoding_sig, signal, sigs_labels)
 
@@ -73,9 +75,9 @@ print(EMGname)
 
 plt.figure()
 plt.plot(y)#, label='Validation Set, (Classification Accuracy) = %.2f%s' %(np.max(etr), '%'))
-# plt.title('Percent correct classification: 2 vs. 3')
-# plt.xlabel('Cov Matrix Smoothing Factor')
-# plt.ylabel('Percent Correct Classification')
+plt.title(decoding_sig + ': ' + EMGname)
+plt.xlabel('Bins')
+#plt.ylabel('Percent Correct Classification')
 # plt.legend(loc='lower right')
 plt.show(block=False)
 
@@ -90,8 +92,8 @@ y_mean = np.mean(y) #Note I keep track of the original mean and stdev so we can 
 y_std = np.std(y)
 y = stats.zscore(y)
 
-print(y_mean)
-print(y_std)
+print('Mean of decoding signal: ' + str(y_mean))
+print('STD of decoding signal: ' + str(y_std))
 
 #Make a vector of times, for plotting later
 time = np.true_divide(np.arange(y.shape[0] + 1),20)
