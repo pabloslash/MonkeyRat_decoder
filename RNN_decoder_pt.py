@@ -9,6 +9,8 @@ import os
 import seaborn as sns
 
 
+
+
 #This function gets the VAF
 def get_corr(y_test,y_test_pred):
 
@@ -34,7 +36,7 @@ folder = 'data/'
 data = io.loadmat(folder + 'N5_170929_No Obstacles_s_matrices.mat')
 
 ## LOAD DATA:
-bins_before = 100
+bins_before = 10
 neural_sig = 'APdat'        # Name of neural data
 decoding_sig = 'EMGdat'     # Usually: 'EMGdat' / 'KINdat' (!!string)
 decoding_labels = 'EMGlabels'  # Usually: 'EMGlabels' / 'KINlabels' (!!string)
@@ -156,7 +158,7 @@ from keras.layers import Dense, Activation, Dropout, LSTM, SimpleRNN, GRU
 units = 500
 dropout = 0.2
 num_epochs = 10
-verbose_flag = 0 #If you want to see the output during training
+verbose_flag = 1 #If you want to see the output during training
 
 #Create model
 model = Sequential()
@@ -202,10 +204,11 @@ print("vaf=", r2)
 #Plot
 plt.plot(time_test,y_test_rescale)
 plt.plot(time_test,y_test_pred_rescale)
-plt.title(sMuscle)
+# plt.title(sMuscle)
 plt.xlabel('Time (s)')
 plt.ylabel('EMG')
 plt.legend(['Actual','Predicted'],bbox_to_anchor=(1, .25))
+plt.show(block=False)
 #plt.ylim([0, 220])
 
 # Save variables to plot in MATLAB
