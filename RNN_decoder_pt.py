@@ -10,13 +10,18 @@ import seaborn as sns
 
 
 
-
-#This function gets the VAF
 def get_corr(y_test,y_test_pred):
-
+    y_test = np.expand_dims(y_test,1)
     y_mean = np.mean(y_test)
-    r2 = 1-np.sum((y_test_pred-y_test)**2) / np.sum((y_test-y_mean)**2)
+    r2 = 1-np.sum((y_test_pred-y_test)**2)/np.sum((y_test-y_mean)**2)
     return r2
+
+# #This function gets the VAF
+# def get_corr(y_test,y_test_pred):
+#
+#     y_mean = np.mean(y_test)
+#     r2 = 1-np.sum((y_test_pred-y_test)**2) / np.sum((y_test-y_mean)**2)
+#     return r2
 
 # Imported from cell as unicode in the last data I worked with.
 # Might give errors in the future if not in the same format
@@ -33,29 +38,30 @@ def data_RNN_extraction():
 
 # IMPORT DATA
 folder = 'data/'
+# data = io.loadmat(folder + 'N5_170929_No Obstacles_s_matrices.mat')
 data = io.loadmat(folder + 'N5_170929_No Obstacles_s_matrices.mat')
 
 ## LOAD DATA:
-bins_before = 10
+bins_before = 100
 neural_sig = 'APdat'        # Name of neural data
 decoding_sig = 'EMGdat'     # Usually: 'EMGdat' / 'KINdat' (!!string)
-decoding_labels = 'EMGlabels'  # Usually: 'EMGlabels' / 'KINlabels' (!!string)
+# decoding_labels = 'EMGlabels'  # Usually: 'EMGlabels' / 'KINlabels' (!!string)
 signal = 1                  # EMG/Kinematic column to decode (FCR,FCU,ECR etc.)
 
 
 neural_dat = data[neural_sig]
-dec_sig_dat = data[decoding_sig][:,signal]
-sigs_labels = data[decoding_labels]
+dec_sig_dat = data[decoding_sig][:]
+# sigs_labels = data[decoding_labels]
 
 num_neurons = neural_dat.shape[1]
 num_ex = neural_dat.shape[0] - bins_before  # Predictions start after "bins_before" bins
 
 
-EMGname = get_EMG_name(decoding_sig, signal, sigs_labels)
+# EMGname = get_EMG_name(decoding_sig, signal, sigs_labels)
 
 
 # Prepare data to throw into RNN
-y = dec_sig_dat[bins_before:bins_before+num_ex]
+y = dec_sig_dat[bins_before:bins_before+num_ex, signal]
 
 # Make the covariate matrix for an RNN
 # Each example (1st dimension) has "bins_before" bins of neural activity
@@ -68,7 +74,7 @@ for i in xrange (num_ex):
 
 
 
-print(EMGname)
+# print(EMGname)
 
 ## Convert data
 
@@ -77,7 +83,7 @@ print(EMGname)
 
 plt.figure()
 plt.plot(y)#, label='Validation Set, (Classification Accuracy) = %.2f%s' %(np.max(etr), '%'))
-plt.title(decoding_sig + ': ' + EMGname)
+# plt.title(decoding_sig + ': ' + EMGname)
 plt.xlabel('Bins')
 #plt.ylabel('Percent Correct Classification')
 # plt.legend(loc='lower right')
@@ -109,9 +115,9 @@ X.shape[0]
 
 # SPLIT INTO TRAINING/ VALIDATION/TESTING sets
 #Train/test/valid proportions of data
-train_prop = 0.90
-test_prop = 0.10
-valid_prop = 0 #If you are seeing what parameters work best, you should do this on a separate validation set, to avoid overfitting to the test set
+train_prop=0.90
+test_prop=0.1
+valid_prop=0 #If you are seeing what parameters work best, you should do this on a separate validation set, to avoid overfitting to the test set
 
 train_size = np.int(np.round(train_prop * X.shape[0]))
 test_size = np.int(np.round(test_prop * X.shape[0]))
@@ -139,24 +145,24 @@ time_test = time[train_size + 1:]
 
 saveResultsDir = (folder + 'PredResults/')
 
-saveResultsDir = (folder + 'PredResults/' + EMGname + '/')
-if not os.path.exists(saveResultsDir):
-    os.makedirs(saveResultsDir)
+# saveResultsDir = (folder + 'PredResults/' + EMGname + '/')
+# if not os.path.exists(saveResultsDir):
+#     os.makedirs(saveResultsDir)
 
 #Save train + test to check
 io.savemat(saveResultsDir + 'TestTrain.mat', {'train_neural':X_train, 'test_neural':X_test, 'train_EMG':y_train, 'test_EMG':y_test})
 
 #RNN DECODING
 #Import everything for keras
-
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout, LSTM, SimpleRNN, GRU
-#from keras.regularizers import l2, activity_l2, l1
-#from keras.callbacks import EarlyStopping
+from keras.regularizers import l2, l1 #activity_l2, l1
+from keras.callbacks import EarlyStopping
+
 
 #Parameters
-units = 500
-dropout = 0.2
+units = 50
+dropout = 0
 num_epochs = 10
 verbose_flag = 1 #If you want to see the output during training
 
@@ -198,8 +204,8 @@ print("epochs=" , num_epochs)
 y_test_rescale = (y_test*y_std) + y_mean
 y_test_pred_rescale = (y_test_pred*y_std) + y_mean
 
-r2 = get_corr(y_test=y_test_rescale, y_test_pred=y_test_pred_rescale)
-print("vaf=", r2)
+# r2 = get_corr(y_test_rescale, y_test_pred_rescale)
+# print("vaf=", r2)
 
 #Plot
 plt.plot(time_test,y_test_rescale)
@@ -212,7 +218,7 @@ plt.show(block=False)
 #plt.ylim([0, 220])
 
 # Save variables to plot in MATLAB
-saveResultsDir = (folder + 'PredResults/' + sMuscle + '/')
+saveResultsDir = (folder + 'PredResults/' + EMGname + '/')
 if not os.path.exists(saveResultsDir):
     os.makedirs(saveResultsDir)
 

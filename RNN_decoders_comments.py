@@ -19,7 +19,8 @@ from scipy import stats
 # In[3]:
 
 folder='data/'
-data = io.loadmat(folder + 'N5_test2.mat')
+data = io.loadmat(folder + 'N6_test.mat')
+# data = io.loadmat(folder + 'N5_test2.mat')
 
 X = data['X']
 y = data['Y']
@@ -49,7 +50,7 @@ time = np.true_divide(np.arange(y.shape[0]+1),20) #Make a vector of times, for p
 
 #Train/test/valid proportions of data
 train_prop=0.90
-test_prop=0.5
+test_prop=0.1
 valid_prop=0 #If you are seeing what parameters work best, you should do this on a separate validation set, to avoid overfitting to the test set
 
 train_size=np.int(np.round(train_prop*X.shape[0]))
@@ -112,7 +113,7 @@ verbose_flag=1 #If you want to see the output during training
 #Create model
 model=Sequential()
 #If you want to run an LSTM or GRU rather than a simpleRNN, in the next line change "SimpleRNN" to "GRU" or "LSTM"
-model.add(SimpleRNN(units,input_shape=(X.shape[1],X.shape[2]),dropout_W=dropout,dropout_U=dropout))
+model.add(LSTM(units,input_shape=(X.shape[1],X.shape[2]),dropout_W=dropout,dropout_U=dropout))
 if dropout!=0:
     model.add(Dropout(dropout))
 model.add(Dense(1,init='uniform'))
@@ -126,7 +127,7 @@ model.fit(X_train,y_train,nb_epoch=num_epochs,verbose=verbose_flag)
 #Get predictions on test set
 y_test_pred = model.predict(X_test)
 #Get VAF on test set
-r2=get_corr(y_test=y_test,y_test_pred=y_test_pred)
+r2 = get_corr(y_test=y_test,y_test_pred=y_test_pred)
 print("vaf=", r2)
 
 
