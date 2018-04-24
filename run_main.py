@@ -15,7 +15,7 @@ neural_sig = 'APdat'            # Name of neural data
 decoding_sig = 'EMGdat'         # Usually: 'EMGdat' / 'KINdat' (!!string)
 decoding_labels = 'EMGlabels'   # Usually: 'EMGlabels' / 'KINlabels' (!!string) -> Leave as Empty string otherwise
 signal = 1                      # EMG/Kinematic column to decode (FCR,FCU,ECR etc.)
-allSignals = False               # If you want to analyze all signals (all EMGs/KINs) set this to TRUE. It won't matter what the variable 'signal' is then.
+allSignals = True               # If you want to analyze all signals (all EMGs/KINs) set this to TRUE. It won't matter what the variable 'signal' is then.
 
 ## NNet variables:
 units = 50
@@ -35,18 +35,8 @@ do_folds = True
 # RUN RNN
 ############################################################
 rnn = Rat_decoder(folder, bins_before, units, dropout, num_epochs)
-
-
 rnn.import_data(file_name)
-
 rnn.define_decoding_data(neural_sig, decoding_sig, decoding_labels)
+rnn.train_model(test_prop, valid_prop, signal=signal, allSignals=allSignals, do_folds=do_folds, verbose_flag=verbose_flag , mod=LSTM)
 
-# rnn.data_RNN_extraction(bins_before, signal)
-#
-# rnn.z_score_data()
-#
-# rnn.assign_test_val_sets(train_prop, test_prop, valid_prop)
-
-rnn.train_model(test_prop, valid_prop, signal=signal, allSignals=allSignals, folds=False, verbose_flag=verbose_flag , mod=LSTM)
-
-rnn.plot_results()
+rnn.plot_results(show_flag=True)
