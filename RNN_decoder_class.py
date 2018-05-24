@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 #%matplotlib inline # For jupyter Notebooks
-import sklearn.cross_validation
+# import sklearn.cross_validation #Deprecated
 import sklearn.model_selection
 from scipy import io
 from scipy import stats
@@ -13,6 +13,9 @@ from keras.layers import Dense, Activation, Dropout, LSTM, SimpleRNN, GRU
 from keras.regularizers import l2, l1 #activity_l2, l1
 from keras.callbacks import EarlyStopping
 import IPython as IP
+#pyc files
+import sys
+sys.dont_write_bytecode = True
 
 
 class Rat_decoder(object):
@@ -203,8 +206,8 @@ class Rat_decoder(object):
             if not (os.path.isdir(signal_dir)):
                 os.mkdir(signal_dir)
 
-            io.savemat(signal_dir + 'predictions.mat', {'y_actual':(self.test_actual*self.y_std)+self.y_mean,
-                       'y_predicted':(self.test_predicted*self.y_std)+self.y_mean, 'mean_vaf':np.mean(self.vaf), 'VAFs':self.vaf})
+            io.savemat(signal_dir + self.EMGname + '_predictions.mat', {'y_actual':(self.test_actual*self.y_std)+self.y_mean,
+                       'y_predicted':(self.test_predicted*self.y_std)+self.y_mean, 'EMG_name':self.EMGname, 'mean_vaf':np.mean(self.vaf), 'folds_VAFs':self.vaf})
             # io.savemat(signal_dir + 'folds_VAFs.mat', {'VAFs':self.vaf})
 
             self.plot_results(plot_range=[10], show_flag=False) #Plot and save 10s
