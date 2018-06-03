@@ -39,12 +39,13 @@ class Rat_decoder(object):
     # Might give errors in the future if not in the same format
     def get_EMG_name(self, signal):
         EMGname = ''
-        if (self.sigs_labels.size > 0): #If we specified signal labels
+        try:  #If we have signal labels
             EMGname = self.sigs_labels[0,signal][0].encode('utf8')
-        elif 'EMG' in self.decoding_sig:
-            EMGname = 'EMG' + str(signal)
-        elif 'KIN' in self.decoding_sig:
-            EMGname = 'KIN' + str(signal)
+        except:
+            if 'EMG' in self.decoding_sig:
+                EMGname = 'EMG' + str(signal)
+            elif 'KIN' in self.decoding_sig:
+                EMGname = 'KIN' + str(signal)
         return EMGname
         # EMG/Kinematic column to decode (FCR,FCU,ECR etc.)
 
