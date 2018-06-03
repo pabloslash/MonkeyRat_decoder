@@ -6,14 +6,14 @@ from RNN_decoder_class import *
 ############################################################
 # IMPORT DATA
 folder = 'data/'       #Specify path to folder containing DATA
-file_name = 'N6_171026_No Obstacles_s_matrices.mat'
+file_name = 'N5_10-01-17_NoObstacles_Matrices2Use_noNaNs.mat'
 
 ############################################################
 ## DATA variables:
 bins_before = 50
-neural_sig = 'APdat'            # Name of neural data
-decoding_sig = 'EMGdat'         # Usually: 'EMGdat' / 'KINdat' (!!string)
-decoding_labels = 'EMGlabels'   # Usually: 'EMGlabels' / 'KINlabels' (!!string) -> Leave as Empty string otherwise
+neural_sig = 'APdat3'            # Name of neural data
+decoding_sig = 'EMGdat3'         # Usually: 'EMGdat' / 'KINdat' (!!string)
+decoding_labels = ''   # Usually: 'EMGlabels' / 'KINlabels' (!!string) -> Leave as Empty string otherwise
 signal = 1                      # EMG/Kinematic column to decode (FCR,FCU,ECR etc.)
 allSignals = True               # If you want to analyze all signals (all EMGs/KINs) set this to TRUE. It won't matter what the variable 'signal' is then.
 
